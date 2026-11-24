@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&family=Kelly+Slab&family=Supermercado+One&display=swap" rel="stylesheet">
+    <title>Carrito</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Dosis', system-ui, sans-serif;
+            padding: 1.5rem;
+            color: #2b2b2b;
+            background-color: #f4f7f2;
+        }
+
+        h1 {
+            font-family: 'Supermercado One', 'Dosis', sans-serif;
+            font-size: 3rem;
+            text-align: center;
+            color: #BBD43A;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 0 #229E6B;
+        }
+
+        h2 {
+            font-family: 'Dosis', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #229E6B;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid #BBD43A;
+        }
+
+        .contenedor {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .columna {
+            background-color: #ffffff;
+            border: 1px solid #e2e8dd;
+            border-radius: 10px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 6px rgba(34, 158, 107, 0.08);
+        }
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* catálogo */
+        #catalogo li {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #eef2ea;
+        }
+
+        #catalogo li:last-child {
+            border-bottom: none;
+        }
+
+        .foto {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background-color: #eef2ea;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .info {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .nombre {
+            font-family: 'Dosis', sans-serif;
+            font-weight: 700;
+            color: #2b2b2b;
+        }
+
+        .descripcion {
+            font-family: 'Dosis', sans-serif;
+            font-size: 0.8rem;
+            color: #7a8a75;
+        }
+
+        .precio {
+            font-family: 'Dosis', sans-serif;
+            font-weight: 700;
+            color: #229E6B;
+            font-size: 0.95rem;
+        }
+
+        /* carrito */
+        #carrito li {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #eef2ea;
+        }
+
+        #carrito li:last-child {
+            border-bottom: none;
+        }
+
+        .subtotal {
+            margin-left: auto;
+            font-weight: 700;
+            color: #229E6B;
+        }
+
+        .botones {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .botones button {
+            width: 1.9rem;
+            height: 1.9rem;
+            padding: 0;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* botones*/
+        button {
+            font-family: 'Dosis', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #229E6B;
+            border-radius: 6px;
+            background-color: #ffffff;
+            color: #229E6B;
+            cursor: pointer;
+            transition: background-color 0.15s, color 0.15s;
+        }
+
+        button:hover {
+            background-color: #229E6B;
+            color: #ffffff;
+        }
+
+        #catalogo button {
+            background-color: #BBD43A;
+            border-color: #BBD43A;
+            color: #2b2b2b;
+        }
+
+        #catalogo button:hover {
+            background-color: #229E6B;
+            border-color: #229E6B;
+            color: #ffffff;
+        }
+
+        .vacio {
+            color: #7a8a75;
+            font-style: italic;
+            border-bottom: none;
+        }
+
+        /* resumen del carrito */
+        #resumen {
+            margin-top: 1rem;
+            padding-top: 0.9rem;
+            border-top: 2px dashed #e2e8dd;
+            font-size: 0.95rem;
+        }
+
+        #resumen p {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.35rem 0;
+            color: #3a3a3a;
+        }
+
+        #resumen .total {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #229E6B;
+            margin-top: 0.6rem;
+            padding-top: 0.6rem;
+            border-top: 1px solid #e2e8dd;
+        }
+
+        #envio_gratis {
+            margin-top: 0.6rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #2b2b2b;
+            background-color: #f1f7c7;
+            border-left: 4px solid #BBD43A;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        #acciones_carrito {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        #acciones_carrito button {
+            background-color: #229E6B;
+            border-color: #229E6B;
+            color: #ffffff;
+        }
+
+        #acciones_carrito button:hover {
+            background-color: #1b7e55;
+            border-color: #1b7e55;
+        }
+
+        #mensaje {
+            margin-top: 1.2rem;
+            color: #229E6B;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .contenedor {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>Supermarket</h1>
+
+    <div class="contenedor">
+        <div class="columna">
+            <h2>Catálogo de productos</h2>
+            <ul id="catalogo"></ul>
+        </div>
+
+        <div class="columna">
+            <h2>Mi carrito</h2>
+            <ul id="carrito"></ul>
+            <div id="resumen"></div>
+            <div id="acciones_carrito"></div>
+        </div>
+    </div>
+
+    <p id="mensaje"></p>
+
+    <script>
+        //datos base
+        const datos = []
+        const id = 'katy_carrito'
+        const url_guardar = `https://datos.cursoweb.tech/guardar.php?dest=${id}`
+        const url_leer = `https://datos.cursoweb.tech/leer.php?dest=${id}`
+        const usuario = "labora";
+        const password = "Cl4v3$";
+        const credenciales = btoa(`${usuario}:${password}`);
+
+        let catalogo = [
+            ['Tomate', 'Malla 750 g', 1.80, 'img_carrito/tomate.jpg'],
+            ['Pepino', 'Unidad', 0.95, 'img_carrito/pepino.jpg'],
+            ['Zanahoria', 'Bandeja 1 kg', 1.50, 'img_carrito/zanahoria.jpg'],
+            ['Cebolla', 'Malla 1 kg', 1.20, 'img_carrito/cebolla.jpg'],
+            ['Patata', 'Saco 3 kg', 3.00, 'img_carrito/patata.jpg'],
+            ['Manzana', 'Bandeja 1 kg', 2.50, 'img_carrito/manzana.jpg']
+        ];
+
+        //productos con nombre, descripción, precio y cantidad
+        let carrito = [];
+
+        //DOM
+        const LISTA_CATALOGO = document.getElementById('catalogo');
+        const LISTA_CARRITO = document.getElementById('carrito');
+        const RESUMEN = document.getElementById('resumen');
+        const MENSAJE = document.getElementById('mensaje');
+        const ACCIONES = document.getElementById('acciones_carrito');
+
+        //SERVIDOR
+
+        //solo envío nombre y cantidad al servidor
+        function creaObjeto() {
+            let productos_pedido = [];
+            for (let i = 0; i < carrito.length; i++) {
+                let linea = {};
+                linea.nombre = carrito[i][0];
+                linea.cantidad = carrito[i][3];
+                productos_pedido.push(linea);
+            }
+            const datos = {
+                productos: productos_pedido
+            }
+            return enviaDatos(datos);
+        }
+
+        async function enviaDatos(datos) {
+            try {
+                const res = await fetch(url_guardar, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Basic ${credenciales}`
+                    },
+                    body: JSON.stringify(datos)
+                })
+                if (!res.ok) {
+                    throw new Error('Error en la conexión');
+                }
+                const data = await res.json()
+                console.log(data)
+                leerDatos();
+                return true;
+            } catch (err) {
+                console.error("Error:", err)
+                return false;
+            }
+        }
+
+        async function leerDatos() {
+            try {
+                const res = await fetch(url_leer)
+                if (!res.ok) {
+                    throw new Error('No se ha podido conectar')
+                }
+                datos.length = 0;
+                datos.push(... await res.json())
+                console.log(datos)
+            } catch (error) {
+                console.log('ojo', error)
+            }
+        }
+
+        //función auxiliar para crear elementos
+        function creaElemento(elemento, contenido, clase) {
+            const nodo = document.createElement(elemento);
+            if (contenido) {
+                nodo.textContent = contenido;
+            }
+            if (clase) {
+                nodo.className = clase;
+            }
+            return nodo;
+        }
+        //NAVEGADOR
+        function guardarCarritoNav() {
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+        }
+
+        //recupero el carrito que había guardado en el navegador
+        function recuperarCarrito() {
+            let texto = localStorage.getItem('carrito');
+            if (!texto) {
+                MENSAJE.textContent = 'No hay ningún carrito guardado';
+                return;
+            }
+            carrito = JSON.parse(texto);
+            pintarCarrito();
+            MENSAJE.textContent = 'Carrito recuperado';
+        }
+
+
+        function pintarCatalogo() {
+            LISTA_CATALOGO.innerHTML = '';
+            for (let i = 0; i < catalogo.length; i++) {
+                let li = document.createElement('li');
+                //imagen del producto
+                let foto = document.createElement('img');
+                foto.className = 'foto';
+                foto.src = catalogo[i][3];
+                foto.alt = catalogo[i][0];
+                li.append(foto);
+                // nombre y descripción del producto
+                let info = document.createElement('div');
+                info.className = 'info';
+                let nombre = document.createElement('span');
+                nombre.className = 'nombre';
+                nombre.textContent = catalogo[i][0];
+                let descripcion = document.createElement('span');
+                descripcion.className = 'descripcion';
+                descripcion.textContent = catalogo[i][1];
+                info.append(nombre);
+                info.append(descripcion);
+                li.append(info);
+                //precio
+                let precio = document.createElement('span');
+                precio.className = 'precio';
+                precio.textContent = catalogo[i][2].toFixed(2) + ' €/u';
+                li.append(precio);
+                //botón añadir
+                let btn = document.createElement('button');
+                btn.textContent = 'Añadir';
+                btn.dataset.posicion = i;
+                btn.onclick = añadirCarrito;
+                li.append(btn);
+                LISTA_CATALOGO.append(li);
+            }
+        }
+
+        //pinto el carrito con imagen, cantidad, subtotal y resumen
+        function pintarCarrito() {
+            LISTA_CARRITO.innerHTML = '';
+            if (carrito.length === 0) {
+                let li = document.createElement('li');
+                li.textContent = 'El carrito está vacío';
+                li.className = 'vacio';
+                LISTA_CARRITO.append(li);
+                RESUMEN.innerHTML = '';
+                ACCIONES.innerHTML = '';
+                //si no hay carrito pero hay uno guardado, propongo recuperarlo
+                if (localStorage.getItem('carrito')) {
+                    const btn_recuperar = creaElemento('button', 'Recuperar carrito', 'btn-recuperar');
+                    btn_recuperar.onclick = recuperarCarrito;
+                    ACCIONES.append(btn_recuperar);
+                }
+                return;
+            }
+            let subtotal_compra = 0;
+            for (let i = 0; i < carrito.length; i++) {
+                let li = document.createElement('li');
+                //imagen pequeña
+                let foto = document.createElement('img');
+                foto.className = 'foto';
+                foto.alt = carrito[i][0];
+                //busco la ruta de la imagen en el catálogo
+                for (let j = 0; j < catalogo.length; j++) {
+                    if (catalogo[j][0] === carrito[i][0]) {
+                        foto.src = catalogo[j][3];
+                        break;
+                    }
+                }
+                li.append(foto);
+                //nombre y descripción
+                let info = document.createElement('div');
+                info.className = 'info';
+                let nombre = document.createElement('span');
+                nombre.className = 'nombre';
+                nombre.textContent = carrito[i][0];
+                let descripcion = document.createElement('span');
+                descripcion.className = 'descripcion';
+                descripcion.textContent = carrito[i][1];
+                info.append(nombre);
+                info.append(descripcion);
+                li.append(info);
+                //precio
+                let precio = document.createElement('span');
+                precio.className = 'precio';
+                precio.textContent = carrito[i][2].toFixed(2) + ' €/u';
+                li.append(precio);
+                //subtotal de esa línea
+                let subtotal = carrito[i][2] * carrito[i][3];
+                let subtotal_nodo = document.createElement('span');
+                subtotal_nodo.className = 'subtotal';
+                subtotal_nodo.textContent = subtotal.toFixed(2) + ' €';
+                li.append(subtotal_nodo);
+                subtotal_compra = subtotal_compra + subtotal;
+                //botones de cantidad
+                let botones = document.createElement('div');
+                botones.className = 'botones';
+                let btn_menos = document.createElement('button');
+                btn_menos.textContent = '−';
+                btn_menos.dataset.posicion = i;
+                btn_menos.onclick = restarCantidad;
+                let cantidad = document.createElement('span');
+                cantidad.textContent = carrito[i][3];
+                let btn_mas = document.createElement('button');
+                btn_mas.textContent = '+';
+                btn_mas.dataset.posicion = i;
+                btn_mas.onclick = sumarCantidad;
+                botones.append(btn_menos);
+                botones.append(cantidad);
+                botones.append(btn_mas);
+                li.append(botones);
+                //botón eliminar la línea entera
+                let btn = document.createElement('button');
+                btn.textContent = 'Quitar';
+                btn.dataset.posicion = i;
+                btn.onclick = quitarDelCarrito;
+                li.append(btn);
+                LISTA_CARRITO.append(li);
+            }
+            // subtotal, IVA, envío y total
+            let iva = subtotal_compra * 0.21;
+            let envio = 3.95;
+            let texto_envio = '3,95 €';
+            if (subtotal_compra >= 30) {
+                envio = 0;
+                texto_envio = 'Gratis';
+            }
+            let total_compra = subtotal_compra + iva + envio;
+            RESUMEN.innerHTML = '';
+            let linea_subtotal = document.createElement('p');
+            let etiqueta_subtotal = document.createElement('span');
+            etiqueta_subtotal.textContent = 'Subtotal ';
+            let valor_subtotal = document.createElement('span');
+            valor_subtotal.textContent = subtotal_compra.toFixed(2) + ' €';
+            linea_subtotal.append(etiqueta_subtotal);
+            linea_subtotal.append(valor_subtotal);
+            RESUMEN.append(linea_subtotal);
+            //IVA
+            let linea_iva = document.createElement('p');
+            let etiqueta_iva = document.createElement('span');
+            etiqueta_iva.textContent = 'IVA (21%) ';
+            let valor_iva = document.createElement('span');
+            valor_iva.textContent = iva.toFixed(2) + ' €';
+            linea_iva.append(etiqueta_iva);
+            linea_iva.append(valor_iva);
+            RESUMEN.append(linea_iva);
+            //ENVÍO
+            let linea_envio = document.createElement('p');
+            let etiqueta_envio = document.createElement('span');
+            etiqueta_envio.textContent = 'Envío ';
+            let valor_envio = document.createElement('span');
+            valor_envio.textContent = texto_envio;
+            linea_envio.append(etiqueta_envio);
+            linea_envio.append(valor_envio);
+            RESUMEN.append(linea_envio);
+            //TOTAL
+            let linea_total = document.createElement('p');
+            linea_total.className = 'total';
+            let etiqueta_total = document.createElement('span');
+            etiqueta_total.textContent = 'Total ';
+            let valor_total = document.createElement('span');
+            valor_total.textContent = total_compra.toFixed(2) + ' €';
+            linea_total.append(etiqueta_total);
+            linea_total.append(valor_total);
+            RESUMEN.append(linea_total);
+            //mensaje de envío gratis
+            let aviso = document.createElement('p');
+            aviso.id = 'envio_gratis';
+            if (subtotal_compra >= 30) {
+                aviso.textContent = 'Envío gratis al comprar 30 €';
+            } else {
+                let falta = 30 - subtotal_compra;
+                aviso.textContent = 'Te faltan ' + falta.toFixed(2) + ' € para el envío gratis';
+            }
+            RESUMEN.append(aviso);
+            //botones que solo salen si hay productos
+            ACCIONES.innerHTML = '';
+            const btn_guardar = creaElemento('button', 'Guardar compra', 'btn-guardar');
+            btn_guardar.onclick = guardarCompra;
+            const btn_vaciar = creaElemento('button', 'Vaciar carrito', 'btn-vaciar');
+            btn_vaciar.onclick = vaciarCarrito;
+            ACCIONES.append(btn_guardar, btn_vaciar);
+        }
+        //añado un producto del catálogo al carrito
+        function añadirCarrito() {
+            let posicion = this.dataset.posicion;
+            let producto = catalogo[posicion];
+            //miro si ya está en el carrito
+            let encontrado = -1;
+            for (let i = 0; i < carrito.length; i++) {
+                if (carrito[i][0] === producto[0]) {
+                    encontrado = i;
+                    break;
+                }
+            }
+            if (encontrado !== -1) {
+                //si ya está le sumo una unidad
+                carrito[encontrado][3] = carrito[encontrado][3] + 1;
+            } else {
+                //si no está lo añado con una unidad
+                carrito.push([producto[0], producto[1], producto[2], 1]);
+            }
+            guardarCarritoNav();
+            pintarCarrito();
+            MENSAJE.textContent = 'Has añadido 1 de ' + producto[0];
+        }
+        //sumo una unidad a una línea
+        function sumarCantidad() {
+            let posicion = this.dataset.posicion;
+            carrito[posicion][3] = carrito[posicion][3] + 1;
+            guardarCarritoNav();
+            pintarCarrito();
+            MENSAJE.textContent = 'Has añadido 1 de ' + carrito[posicion][0];
+        }
+        //quito una unidad a una línea
+        function restarCantidad() {
+            let posicion = this.dataset.posicion;
+            carrito[posicion][3] = carrito[posicion][3] - 1;
+            if (carrito[posicion][3] <= 0) {
+                //si llega a cero quito la línea
+                carrito.splice(posicion, 1);
+            }
+            guardarCarritoNav();
+            pintarCarrito();
+            MENSAJE.textContent = 'Has quitado 1';
+        }
+        //guardo la compra y vacío el carrito si va bien
+        async function guardarCompra() {
+            if (carrito.length === 0) {
+                MENSAJE.textContent = 'El carrito está vacío';
+                return;
+            }
+            let guardado = await creaObjeto();
+            if (guardado) {
+                carrito = [];
+                //la compra ya está cerrada, borro la copia del navegador
+                localStorage.removeItem('carrito');
+                pintarCarrito();
+                MENSAJE.textContent = 'Compra realizada. ¡Gracias!';
+            } else {
+                MENSAJE.textContent = 'No se ha podido guardar la compra';
+            }
+        }
+        //quito una línea entera del carrito
+        function quitarDelCarrito() {
+            let posicion = this.dataset.posicion;
+            carrito.splice(posicion, 1);
+            guardarCarritoNav();
+            pintarCarrito();
+            MENSAJE.textContent = 'Producto eliminado';
+        }
+        //vacío todo el carrito, pero pregunto antes
+        function vaciarCarrito() {
+            let seguro = confirm('¿Seguro que quieres vaciar el carrito?');
+            if (!seguro) {
+                return;
+            }
+            carrito = [];
+            //también borro la copia del navegador
+            localStorage.removeItem('carrito');
+            pintarCarrito();
+            MENSAJE.textContent = 'Carrito vaciado';
+        }
+
+        
+        pintarCatalogo();
+        pintarCarrito();
+        leerDatos();
+    </script>
+</body>
+
+</html>

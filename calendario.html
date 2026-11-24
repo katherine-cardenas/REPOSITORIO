@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio Calendario Storage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 1rem;
+            color: #222;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 1rem 0;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .contenedor {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .fila {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0 0 0.4rem 0;
+        }
+
+        .fila label {
+            width: 180px;
+            font-size: 0.9rem;
+        }
+
+        .fila input {
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 0.3rem 0.4rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .fila input.error {
+            border-color: red;
+        }
+
+        button {
+            font-family: inherit;
+            font-size: 0.85rem;
+            padding: 0.3rem 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #f0f0f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 0 1rem 0;
+            background-color: #fff;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 0.4rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            font-weight: 600;
+        }
+
+        .meses_evento {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .meses_evento table {
+            margin: 0;
+        }
+
+        .dia_evento {
+            background-color: #ffcccc;
+            color: red;
+            font-weight: bold;
+            border-radius: 10%;
+        }
+
+        .dia_seleccionable {
+            cursor: pointer;
+        }
+
+        .dia_seleccionable:hover {
+            background-color: #eef;
+        }
+
+        dialog {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 1rem;
+            background-color: #fff;
+        }
+
+        dialog .fila label {
+            width: 100px;
+        }
+
+        @media (max-width: 700px) {
+            .meses_evento {
+                grid-template-columns: 1fr;
+            }
+
+            .fila {
+                flex-wrap: wrap;
+            }
+
+            .fila label {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contenedor">
+        <h2 id="saludo"></h2>
+        <h1>Calendario 2026</h1>
+        <div class="fila">
+            <label for="in_event_name">Nombre del evento:</label>
+            <input type="text" name="" id="in_event_name">
+        </div>
+        <div class="fila">
+            <label for="in_date">Fecha del evento:</label>
+            <input type="date" name="" id="in_date">
+        </div>
+        <div class="fila">
+            <label for="in_name">Nombre del participante:</label><input type="text" id="in_name">
+        </div>
+        <div class="fila">
+            <label for="in_ciudad">Ciudad:</label><input type="text" id="in_ciudad">
+        </div>
+        <div class="fila">
+            <label for="in_mail">Email:</label><input type="email" id="in_mail">
+        </div>
+        <div class="fila">
+            <label for="in_edad">Edad:</label><input type="number" size="3" id="in_edad">
+        </div>
+        <div class="fila">
+            <label for="in_ck_asist">Asistir</label>
+            <input type="checkbox" name="" id="in_ck_asist">
+        </div>
+        <div class="fila">
+            <button type="button" id="btn_event">Guardar</button>
+        </div>
+    </div>
+    <h2>Salida de datos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>N. Evento</th>
+                <th>Evento</th>
+                <th>Fecha</th>
+                <th>N. Participante</th>
+                <th>Ciudad</th>
+                <th>Email</th>
+                <th>Edad</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody class="contact-list"></tbody>
+    </table>
+    <dialog id="edit_contact">
+        <div class="fila">
+            <label for="ed_event_name">Evento:</label><input type="text" id="ed_event_name">
+        </div>
+        <div class="fila">
+            <label for="ed_date">Fecha:</label><input type="date" id="ed_date">
+        </div>
+        <div class="fila">
+            <label for="ed_name">Nombre:</label><input type="text" id="ed_name">
+        </div>
+        <div class="fila">
+            <label for="ed_ciudad">Ciudad:</label><input type="text" id="ed_ciudad">
+        </div>
+        <div class="fila">
+            <label for="ed_mail">Email:</label><input type="email" id="ed_mail">
+        </div>
+        <div class="fila">
+            <label for="ed_edad">Edad:</label><input type="number" size="3" id="ed_edad">
+        </div>
+        <button id="btn_ed">Actualizar</button>
+        <button id="btn_del">Eliminar</button>
+        <button id="btn_close">Cerrar</button>
+    </dialog>
+    <dialog id="user_name_form">
+        <div class="fila">
+            <label for="in_user_name">Nombre</label>
+            <input type="text" name="" id="in_user_name">
+            <button id="btn_in_user_name">Acceder</button>
+        </div>
+    </dialog>
+    <h2>Fecha del evento</h2>
+    <section class="meses_evento">
+        <article id="noviembre">
+            <table>
+                <caption id="mes_11">
+                    <h3>Noviembre</h3>
+                </caption>
+                <tbody>
+                    <tr>
+                        <th>L</th>
+                        <th>M</th>
+                        <th>X</th>
+                        <th>J</th>
+                        <th>V</th>
+                        <th class="finde">S</th>
+                        <th class="finde">D</th>
+                        <th class="imagen" rowspan="7"></th>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="finde"></td>
+                        <td class="finde">1</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td class="finde">7</td>
+                        <td class="finde">8</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>10</td>
+                        <td>11</td>
+                        <td>12</td>
+                        <td>13</td>
+                        <td class="finde">14</td>
+                        <td class="finde">15</td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td>17</td>
+                        <td>18</td>
+                        <td>19</td>
+                        <td>20</td>
+                        <td class="finde">21</td>
+                        <td class="finde">22</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td>24</td>
+                        <td>25</td>
+                        <td>26</td>
+                        <td>27</td>
+                        <td class="finde">28</td>
+                        <td class="finde">29</td>
+                    </tr>
+                    <tr>
+                        <td>30</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="finde"></td>
+                        <td class="finde"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+        <article id="diciembre">
+            <table>
+                <caption id="mes_12">
+                    <h3>Diciembre</h3>
+                </caption>
+                <tbody>
+                    <tr>
+                        <th>L</th>
+                        <th>M</th>
+                        <th>X</th>
+                        <th>J</th>
+                        <th>V</th>
+                        <th class="finde">S</th>
+                        <th class="finde">D</th>
+                        <th class="imagen" rowspan="6"></th>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td class="finde">5</td>
+                        <td class="finde">6</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>8</td>
+                        <td>9</td>
+                        <td>10</td>
+                        <td>11</td>
+                        <td class="finde">12</td>
+                        <td class="finde">13</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>15</td>
+                        <td>16</td>
+                        <td>17</td>
+                        <td>18</td>
+                        <td class="finde">19</td>
+                        <td class="finde">20</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>22</td>
+                        <td>23</td>
+                        <td>24</td>
+                        <td>25</td>
+                        <td class="finde">26</td>
+                        <td class="finde">27</td>
+                    </tr>
+                    <tr>
+                        <td>28</td>
+                        <td>29</td>
+                        <td>30</td>
+                        <td>31</td>
+                        <td></td>
+                        <td class="finde"></td>
+                        <td class="finde"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+    </section>
+    <script>
+        let calendario = [];
+
+        //datos base para el servidor
+        const datos = []
+        const id = 'katy_calendario'
+        const url_guardar = `https://datos.cursoweb.tech/guardar.php?dest=${id}`
+        const url_leer = `https://datos.cursoweb.tech/leer.php?dest=${id}`
+        const usuario = "labora";
+        const password = "Cl4v3$";
+        //codifico las credenciales en base64
+        const credenciales = btoa(`${usuario}:${password}`);
+
+        //DOM
+        //INPUTS
+        const EVENT_NAME = document.getElementById('in_event_name');
+        const DATE_IN = document.getElementById('in_date');
+        const NAME = document.getElementById('in_name');
+        const TOWN = document.getElementById('in_ciudad');
+        const EMAIL = document.getElementById('in_mail');
+        const AGE = document.getElementById('in_edad');
+        const ASIST = document.getElementById('in_ck_asist');
+        const BTN_ADD = document.getElementById('btn_event');
+        // EDITAR
+        const ED_PANEL = document.getElementById('edit_contact');
+        const ED_EVENT_NAME = document.getElementById('ed_event_name');
+        const ED_DATE = document.getElementById('ed_date');
+        const ED_NAME = document.getElementById('ed_name');
+        const ED_TOWN = document.getElementById('ed_ciudad');
+        const ED_EMAIL = document.getElementById('ed_mail');
+        const ED_AGE = document.getElementById('ed_edad');
+        const ED_BTN = document.getElementById('btn_ed');
+        const DEL_BTN = document.getElementById('btn_del');
+        const CLOSE_BTN = document.getElementById('btn_close');
+
+        //FECHA 
+        function ponerFecha() {
+            let hoy = new Date();
+            let año = hoy.getFullYear();
+            let mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            let dia = String(hoy.getDate()).padStart(2, '0');
+            DATE_IN.value = año + '-' + mes + '-' + dia;
+        }
+
+        //SERVIDOR
+        //preparo el objeto que voy a mandar
+        //solo mando los datos del evento, el id lo pone el servidor
+        function creaObjeto() {
+            const datos_evento = {
+                titulo: EVENT_NAME.value,
+                fecha: DATE_IN.value,
+                participante: NAME.value,
+                ciudad: TOWN.value,
+                mail: EMAIL.value,
+                edad: AGE.value,
+                asistencia: ASIST.checked
+            }
+            return enviaDatos(datos_evento);
+        }
+
+        //mando los datos al servidor
+        //devuelvo true o false para saber si fue bien
+        async function enviaDatos(datos_evento) {
+            try {
+                const res = await fetch(url_guardar, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Basic ${credenciales}`
+                    },
+                    body: JSON.stringify(datos_evento)
+                })
+                if (!res.ok) {
+                    throw new Error('Error en la conexión');
+                }
+                const data = await res.json()
+                console.log(data)
+                leerDatos();
+                return true;
+            } catch (err) {
+                console.error("Error:", err)
+                return false;
+            }
+        }
+
+        //leo lo que hay guardado en el servidor
+        async function leerDatos() {
+            try {
+                const res = await fetch(url_leer)
+                if (!res.ok) {
+                    throw new Error('No se ha podido conectar')
+                }
+                datos.length = 0;
+                datos.push(... await res.json())
+                console.log(datos)
+            } catch (error) {
+                console.log('ojo', error)
+            }
+        }
+
+        //CALENDARIO
+        function createEvent() {
+            //recojo todos los datos del formulario a la vez
+            let titulo = validateInput(EVENT_NAME, 1);
+            let fechaSeleccionada = DATE_IN.value;
+            let nombre = validateInput(NAME, 1);
+            let ciudad = validateInput(TOWN, 1);
+            let mail = validateInput(EMAIL, 2);
+            let edad = validateInput(AGE, 3);
+            if (!fechaSeleccionada) {
+                alert('Selecciona una fecha');
+                return;
+            }
+            if (!titulo) {
+                alert('El nombre del evento debe contener mínimo 3 letras)');
+                return;
+            }
+            if (!nombre) {
+                alert('El nombre del participante debe contener mínimo 3 letras');
+                return;
+            }
+            if (!ciudad) {
+                alert('El nombre de la ciudad debe contener mínimo 3 letras)');
+                return;
+            }
+            if (!mail) {
+                alert('El email debe contener @ y .)');
+                return;
+            }
+            if (!edad) {
+                alert('Revisa la edad (entre 1 y 120)');
+                return;
+            }
+
+            //compruebo que el mes esté en el calendario
+            let partes = fechaSeleccionada.split('-');
+            let mes = partes[1];
+            if (mes !== '11' && mes !== '12') {
+                alert('El calendario solo tiene noviembre y diciembre de 2026');
+                return;
+            }
+
+            //guardo el objeto en el array
+            let identificador = calendario.length + 1;
+            let cita = {};
+            cita.titulo = titulo;
+            cita.fecha = fechaSeleccionada;
+            cita.participante = nombre;
+            cita.ciudad = ciudad;
+            cita.mail = mail;
+            cita.edad = edad;
+            cita.asistencia = ASIST.checked;
+            cita.id = identificador;
+            calendario.push(cita);
+            console.log(calendario);
+            saveData(calendario, 'calendario');
+            pintarDia(fechaSeleccionada);
+            showContacts();
+            limpiarFormulario();
+            //mando también al servidor
+            creaObjeto();
+        }
+
+        function limpiarFormulario() {
+            EVENT_NAME.value = NAME.value = TOWN.value = EMAIL.value = AGE.value = '';
+            ASIST.checked = false;
+            ponerFecha();
+            EVENT_NAME.focus();
+        }
+
+        function pintarDia(fechaString) {
+            //uso .split ('-') para separar por partes. [1] es el mes y [2] es el día. El input date devuelve la fecha
+            let partes = fechaString.split('-');
+            let mes = partes[1];
+            let dia = parseInt(partes[2]);
+            let contenedorMes;
+            //identifico el contenedor buscando el mes
+            if (mes === '11') {
+                contenedorMes = document.getElementById('noviembre');
+            } else if (mes === '12') {
+                contenedorMes = document.getElementById('diciembre');
+            }
+            //Si el contenedor coincide busco en las celdas td de ese mes
+            if (contenedorMes) {
+                let celdas = contenedorMes.getElementsByTagName('td');
+                //recorro las celdas para encontrar el día
+                for (let i = 0; i < celdas.length; i++) {
+                    if (parseInt(celdas[i].innerText) === dia) {
+                        celdas[i].classList.add('dia_evento');
+                        break; //termina el bucle porque encontré el día
+                    }
+                }
+            }
+        }
+        function quitarDia(fechaString) {
+            let partes = fechaString.split('-');
+            let mes = partes[1];
+            let dia = parseInt(partes[2]);
+            let contenedorMes;
+            if (mes === '11') {
+                contenedorMes = document.getElementById('noviembre');
+            } else if (mes === '12') {
+                contenedorMes = document.getElementById('diciembre');
+            }
+            if (contenedorMes) {
+                let celdas = contenedorMes.getElementsByTagName('td');
+                for (let i = 0; i < celdas.length; i++) {
+                    if (parseInt(celdas[i].innerText) === dia) {
+                        celdas[i].classList.remove('dia_evento');
+                        break;
+                    }
+                }
+            }
+        }
+
+        //al hacer clic en un día del calendario, relleno la fecha
+        function seleccionarDia() {
+            //el td pulsado
+            let celda = this;
+            let dia = parseInt(celda.innerText);
+            if (isNaN(dia)) {
+                return;
+            }
+            //miro en qué mes está la celda
+            let mes = '11';
+            let contenedor = celda.closest('article');
+            if (contenedor.id === 'diciembre') {
+                mes = '12';
+            }
+            //formateo la fecha como la espera el input date
+            let dia_texto = String(dia).padStart(2, '0');
+            DATE_IN.value = '2026-' + mes + '-' + dia_texto;
+            //llevo el foco al nombre del evento para escribir rápido
+            EVENT_NAME.focus();
+        }
+
+        //pongo el clic en todos los días del calendario
+        function activarDias() {
+            let celdas_noviembre = document.getElementById('noviembre').getElementsByTagName('td');
+            for (let i = 0; i < celdas_noviembre.length; i++) {
+                celdas_noviembre[i].classList.add('dia_seleccionable');
+                celdas_noviembre[i].onclick = seleccionarDia;
+            }
+            let celdas_diciembre = document.getElementById('diciembre').getElementsByTagName('td');
+            for (let i = 0; i < celdas_diciembre.length; i++) {
+                celdas_diciembre[i].classList.add('dia_seleccionable');
+                celdas_diciembre[i].onclick = seleccionarDia;
+            }
+        }
+
+        document.getElementById('btn_event').onclick = createEvent
+
+        //DATOS USUARIO
+        function validateInput(input, validate) {
+            let value = input.value;
+            let result = false;
+            switch (validate) {
+                case 1:
+                    result = validateText(value)
+                    break;
+                case 2:
+                    result = validateEmail(value)
+                    break;
+                case 3:
+                    result = validateNumber(value)
+                    break;
+
+                default:
+                    result = validateText(value)
+                    break;
+            }
+            if (!result) {
+                setInputError(input);
+                return false;
+            }
+            return result;
+        }
+        function validateText(value) {
+            let text = cleanText(value);
+            return text;
+        }
+        function validateEmail(value) {
+            let email = cleanText(value);
+            if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1) {
+                return false;
+            }
+            return email;
+        }
+        function validateNumber(value) {
+            let age = parseInt(value);
+            if (isNaN(age) || age < 1 || age > 120) {
+                return false;
+            }
+            return age;
+        }
+        function cleanText(value) {
+            let text = value.trim();
+            while (text.indexOf('  ') != -1) {
+                text = text.replace('  ', ' ');
+            }
+            if (text.length < 3) {
+                return false;
+            }
+            return text;
+        }
+        function setInputError(input) {
+            input.classList.add('error');
+            input.value = '';
+        }
+        function clearInputError() {
+            this.classList.remove('error')
+        }
+        function showContacts() {
+            //identificar destino en el DOM
+            const listado = document.querySelector('.contact-list');
+            //eliminamos posibles valores
+            listado.innerHTML = '';
+            //contador de filas
+            let row_count = 0;
+            //bucle para recorrer las citas
+            for (const cita of calendario) {
+                //creo un elemento tr
+                let row = document.createElement('tr');
+                //paso los datos en el orden de las columnas
+                let datos = [cita.id, cita.titulo, cita.fecha, cita.participante, cita.ciudad, cita.mail, cita.edad];
+                for (const data of datos) {
+                    let cell = document.createElement('td');
+                    cell.textContent = data;
+                    row.append(cell);
+                }
+                //añadir botón edit
+                const btn_ed = document.createElement('button')
+                btn_ed.textContent = 'Editar';
+                btn_ed.onclick = editContact;
+                btn_ed.dataset.row = row_count;
+                let cell = document.createElement('td');
+                //celda para el botón
+                cell.append(btn_ed)
+                row.append(cell)
+                //paso la fila al DOM
+                listado.append(row)
+                //incremento el contador
+                row_count++;
+            }
+        }
+        function editContact() {
+            //busco la fila de datos a editar
+            const index = parseInt(this.dataset.row);
+            //accedo a esa fila
+            const data = calendario[index];
+            //muestro valores
+            ED_EVENT_NAME.value = data.titulo
+            ED_DATE.value = data.fecha
+            ED_NAME.value = data.participante
+            ED_TOWN.value = data.ciudad
+            ED_EMAIL.value = data.mail
+            ED_AGE.value = data.edad
+            //mostrar modal
+            ED_PANEL.showModal();
+            //definir botón editar
+            ED_BTN.onclick = () => updateContact(index);
+            //definir botón eliminar
+            DEL_BTN.onclick = () => deleteContact(index);
+            //botón cerrar
+            CLOSE_BTN.onclick = () => ED_PANEL.close();
+
+        }
+        function updateContact(index) {
+            let titulo = validateInput(ED_EVENT_NAME, 1);
+            let fecha = ED_DATE.value;
+            let nombre = validateInput(ED_NAME, 1);
+            let ciudad = validateInput(ED_TOWN, 1);
+            let mail = validateInput(ED_EMAIL, 2);
+            let edad = validateInput(ED_AGE, 3);
+            if (!fecha) {
+                alert('Selecciona una fecha');
+                return;
+            }
+            if (!titulo || !nombre || !ciudad || !mail || !edad) {
+                return;
+            }
+            //me guardo la fecha vieja antes de cambiarla
+            let fecha_vieja = calendario[index].fecha;
+            let cita_editada = {};
+            cita_editada.id = calendario[index].id;
+            cita_editada.titulo = titulo;
+            cita_editada.fecha = fecha;
+            cita_editada.participante = nombre;
+            cita_editada.ciudad = ciudad;
+            cita_editada.mail = mail;
+            cita_editada.edad = edad;
+            cita_editada.asistencia = calendario[index].asistencia;
+            calendario[index] = cita_editada;
+            saveData(calendario, 'calendario');
+            //quito el rojo del día viejo y pongo el del nuevo
+            quitarDia(fecha_vieja);
+            pintarDia(fecha);
+            showContacts();
+            ED_PANEL.close();
+        }
+        function deleteContact(index) {
+            let del = confirm('Acepta para eliminar este contacto');
+            if (del) {
+                //me guardo la fecha antes de borrar la cita
+                let fecha_vieja = calendario[index].fecha;
+                calendario.splice(index, 1)
+                saveData(calendario, 'calendario');
+                //quito el rojo del día que ya no tiene evento
+                quitarDia(fecha_vieja);
+                showContacts();
+                ED_PANEL.close();
+            }
+        }
+        //EVENTOS
+        const INPUTS = document.querySelectorAll('input');
+        for (const input of INPUTS) {
+            input.onfocus = clearInputError
+        }
+
+        //STORAGE
+        const DIAL_USER = document.getElementById('user_name_form');
+        const IN_USER_LOG = document.getElementById('in_user_name');
+        const BTN_USER_LOG = document.getElementById('btn_in_user_name');
+        const SALUDO = document.getElementById('saludo');
+
+        function checkIsDefinedUserName() {
+            let user_log = localStorage.getItem('username');
+            if (!user_log) {
+                DIAL_USER.showModal()
+            } else {
+                SALUDO.textContent = 'Hola,  ' + user_log;
+            }
+        }
+        function setUserName() {
+            let user_log = validateInput(IN_USER_LOG, 1);
+            if (!user_log) {
+                return;
+            }
+            localStorage.setItem('username', user_log);
+            DIAL_USER.close();
+            SALUDO.textContent = 'Hola,  ' + user_log;
+        }
+        function saveData(data_to_save, label_data) {
+            //convertir a texto el array de datos
+            let text_data = JSON.stringify(data_to_save);
+            //guardo en Storage
+            localStorage.setItem(label_data, text_data);
+        }
+        function getData() {
+            let array_text = localStorage.getItem('calendario');
+            if (array_text) {
+                let citas_saved = JSON.parse(array_text);
+                calendario = [...citas_saved];
+                showContacts();
+                //repinto los días que ya tenían evento
+                for (const cita of calendario) {
+                    pintarDia(cita.fecha);
+                }
+            }
+        }
+        function inicio() {
+            ponerFecha();
+            checkIsDefinedUserName();
+            activarDias();
+            getData();
+            leerDatos();
+        }
+        BTN_USER_LOG.onclick = setUserName;
+        inicio();
+
+
+    </script>
+</body>
+
+</html>
